@@ -1,6 +1,5 @@
 package com.xbs.business.biz.base;
 
-import com.xbs.business.dao.base.entity.User;
 import com.xbs.business.service.base.intf.UserService;
 import com.xbs.business.service.base.vo.UserVO;
 import com.xbs.util.base.ErrorMessage;
@@ -16,6 +15,10 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ *
+ * @author czt
+ */
 @Service
 @Slf4j
 public class UserBiz {
@@ -26,11 +29,6 @@ public class UserBiz {
     public List<UserVO> getUserList() {
 
         return userService.getUserList();
-    }
-
-    public UserVO getUserByUserName(String userName, String password) {
-
-        return userService.getUserByUserName(userName,password);
     }
 
     public Result login(String userName, String password) {

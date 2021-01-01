@@ -11,6 +11,4 @@ public interface UserService {
 
     User getUserByUserName(String userName);
 
-    UserVO getUserByUserName(String userName,String password);
-
 }

@@ -12,28 +12,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @author  czt
+ */
 @Configuration
 public class ShiroConfig {
 
     @Autowired
     private UserService userService;
 
-    // 配置自定义Realm
     @Bean
     public UserRealm userRealm() {
         UserRealm userRealm = new UserRealm(userService);
-        userRealm.setCredentialsMatcher(credentialsMatcher()); //配置使用哈希密码匹配
+        userRealm.setCredentialsMatcher(credentialsMatcher());
         return userRealm;
     }
 
 
-    // 配置url过滤器
     @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
 
         chainDefinition.addPathDefinition("/web/**", "anon");
         chainDefinition.addPathDefinition("/user/login","anon");
+        chainDefinition.addPathDefinition("/user/password","anon");
         chainDefinition.addPathDefinition("/**", "authc");
         return chainDefinition;
     }
@@ -50,21 +52,20 @@ public class ShiroConfig {
         return authorizationAttributeSourceAdvisor;
     }
 
-    // 设置用于匹配密码的CredentialsMatcher
     @Bean
     public HashedCredentialsMatcher credentialsMatcher() {
         HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
-        credentialsMatcher.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);  // 散列算法，这里使用更安全的sha256算法
-        credentialsMatcher.setStoredCredentialsHexEncoded(false);  // 数据库存储的密码字段使用HEX还是BASE64方式加密
-        credentialsMatcher.setHashIterations(1024);  // 散列迭代次数
+        credentialsMatcher.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
+        credentialsMatcher.setStoredCredentialsHexEncoded(true);
+        credentialsMatcher.setHashIterations(1024);
         return credentialsMatcher;
     }
 
-    // 配置security并设置userReaml，避免xxxx required a bean named 'authorizer' that could not be found.的报错
     @Bean
     public SessionsSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(userRealm());
+        securityManager.setSessionManager(new ShiroSessionManager());
         return securityManager;
     }
 }
