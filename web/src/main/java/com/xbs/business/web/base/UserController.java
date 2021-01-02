@@ -3,6 +3,7 @@ package com.xbs.business.web.base;
 import com.xbs.business.biz.base.UserBiz;
 import com.xbs.business.service.config.shiro.ShiroUtil;
 import com.xbs.business.web.base.request.LoginRequest;
+import com.xbs.business.web.base.request.ResetPasswordRequest;
 import com.xbs.util.base.ErrorMessage;
 import com.xbs.util.base.Result;
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +22,10 @@ public class UserController {
     private UserBiz userBiz;
 
     @GetMapping("/list")
-    public Result list(){
-        return Result.success(userBiz.getUserList());
+    public Result list(@RequestParam(required = false)String name,
+                       @RequestParam(required = false,defaultValue = "1")Integer pageIndex,
+                       @RequestParam(required = false,defaultValue = "10")Integer pageSize){
+        return Result.success(userBiz.getPageList(name,pageIndex,pageSize));
     }
 
     /**
@@ -34,9 +37,24 @@ public class UserController {
     public Result login(@RequestBody LoginRequest loginRequest){
 
         if(StringUtils.isAnyEmpty(loginRequest.getUserName(),loginRequest.getPassword())){
-            return Result.error(ErrorMessage.PHONE_COMFIRM_ERROR);
+            return Result.error(ErrorMessage.USERNAME_ERROR);
         }
         return userBiz.login(loginRequest.getUserName(),loginRequest.getPassword());
+    }
+
+
+    /**
+     * 登陆成功，返回改用户登陆菜单
+     * @param resetPasswordRequest
+     * @return
+     */
+    @PostMapping("/reset")
+    public Result reset(@RequestBody ResetPasswordRequest resetPasswordRequest){
+
+       if(!StringUtils.equals(resetPasswordRequest.getNewPassword(),resetPasswordRequest.getRepetPassword())){
+           return Result.error(ErrorMessage.PARAM_ERROE);
+       }
+       return userBiz.reset(resetPasswordRequest.getNewPassword());
     }
 
     /**
