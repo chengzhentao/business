@@ -1,5 +1,6 @@
 package com.xbs.business.service.config.shiro;
 
+import com.xbs.business.service.base.intf.RoleService;
 import com.xbs.business.service.base.intf.UserService;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.crypto.hash.Sha256Hash;
@@ -21,9 +22,13 @@ public class ShiroConfig {
     @Autowired
     private UserService userService;
 
+
+    @Autowired
+    private RoleService roleService;
+
     @Bean
     public UserRealm userRealm() {
-        UserRealm userRealm = new UserRealm(userService);
+        UserRealm userRealm = new UserRealm(userService,roleService);
         userRealm.setCredentialsMatcher(credentialsMatcher());
         return userRealm;
     }
