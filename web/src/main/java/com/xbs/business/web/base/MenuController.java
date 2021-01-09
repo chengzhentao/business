@@ -1,7 +1,10 @@
 package com.xbs.business.web.base;
 
 import com.xbs.business.biz.base.MenuBiz;
+import com.xbs.business.dao.base.entity.User;
+import com.xbs.business.service.config.shiro.ShiroUtil;
 import com.xbs.util.base.Constant;
+import com.xbs.util.base.ErrorMessage;
 import com.xbs.util.base.Result;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +35,14 @@ public class MenuController {
         return menuBiz.getPageList(name,pageIndex,pageSize);
     }
 
+
+    @GetMapping("/listMenu")
+    public Result listMenu(){
+        User user = ShiroUtil.currentUser();
+        if(user == null){
+            return Result.error(ErrorMessage.NEED_LOGIN);
+        }
+        return menuBiz.getUserMenu(user.getId());
+    }
 }
 

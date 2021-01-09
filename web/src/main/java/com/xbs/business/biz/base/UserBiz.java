@@ -6,6 +6,7 @@ import com.xbs.business.service.base.intf.UserService;
 import com.xbs.business.service.base.vo.UserVO;
 import com.xbs.business.service.config.shiro.ShiroConfig;
 import com.xbs.business.service.config.shiro.ShiroUtil;
+import com.xbs.util.base.Constant;
 import com.xbs.util.base.ErrorMessage;
 import com.xbs.util.base.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -28,6 +30,9 @@ public class UserBiz {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     public IPage<UserVO> getPageList(String name, Integer pageIndex, Integer pageSize) {
 
@@ -44,20 +49,22 @@ public class UserBiz {
         }
         Subject subject = SecurityUtils.getSubject();
         Serializable tokenId = subject.getSession().getId();
+        redisTemplate.opsForHash().put(Constant.SESSION,userName,userService.getUserByUserName(userName));
         return Result.success(tokenId);
 
 
     }
 
     public Result reset(String newPassword) {
-        String userName = ShiroUtil.currentUser();
+        User user = ShiroUtil.currentUser();
         try {
             SecurityUtils.getSubject().logout();
         } catch (AuthenticationException e) {
             log.error("修改密码失败",e);
             return Result.error(ErrorMessage.USERNAME_ERROR);
         }
-        userService.resetPassword(userName,ShiroUtil.generatePwdEncrypt(newPassword));
+        userService.resetPassword(user.getUserName(),ShiroUtil.generatePwdEncrypt(newPassword));
+        redisTemplate.opsForHash().delete(Constant.SESSION,user.getUserName());
         return Result.success();
     }
 }

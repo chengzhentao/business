@@ -22,5 +22,10 @@ public interface UserService {
      */
     User getUserByUserName(String userName);
 
+    /**
+     *
+     * @param userName
+     * @param newPassword
+     */
     void resetPassword(String userName,String newPassword);
 }

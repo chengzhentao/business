@@ -1,5 +1,6 @@
 package com.xbs.business.service.config.shiro;
 
+import com.xbs.util.base.Constant;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
@@ -22,6 +23,7 @@ public class ShiroSessionManager extends DefaultWebSessionManager {
 
     public ShiroSessionManager() {
         super();
+        this.setGlobalSessionTimeout(Constant.HALF_HOURE);
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.xbs.business.service.base.intf;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.xbs.business.dao.base.entity.Menu;
 
+import java.util.List;
+
 /**
  * @Description
  * @Author cheng
@@ -19,4 +21,6 @@ public interface MenuService {
      * @return
      */
     IPage<Menu> getPageList(String name,Integer pageIndex,Integer pageSize);
+
+    List<Menu> listByRoleIds(List<Integer> roleIds);
 }
